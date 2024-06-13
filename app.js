@@ -23,7 +23,7 @@ const { busmodel } = require("./models/bus")
 app.post("/login", (req, res) => {
     let input = req.body
     //we are checking with mail id
-    blogmodel.find({ "emailid": req.body.emailid }).then(
+    busmodel.find({ "emailid": req.body.emailid }).then(
         (response) => {
             if (response.length > 0) {
                 let dbpass = response[0].pass
@@ -31,14 +31,14 @@ app.post("/login", (req, res) => {
                 bcrypt.compare(input.pass, dbpass, (error, isMatch) => {
                     if (isMatch) {
                         //if login success generate token
-                        jwt.sign({ email: input.emailid }, "blog-app", { expiresIn: "1d" },
+                        jwt.sign({ email: input.emailid }, "bus-app", { expiresIn: "1d" },
                             (error, token) => {
                                 if (error) {
                                     res.json({ "status": "unable to create token" })
                                 } else {
                                     res.json({ "status": "success", "userid": response[0]._id, "token": token })
                                 }
-                            })//blog-app is the name of the token
+                            })//bus-app is the name of the token
                     } else {
                         res.json({ "status": "incorrect password" })
                     }
@@ -62,9 +62,9 @@ app.post("/add", async (req, res) => {
 })
 
 app.length("/viewall", (req, res) => {
-    coursemodel.find().then(
-        (course) => {
-            res.json(course)
+    busmodel.find().then(
+        (bus) => {
+            res.json(bus)
         }
     ).catch(
         (error) => {
@@ -77,8 +77,8 @@ app.length("/viewall", (req, res) => {
 app.post("/search", (req, res) => {
     let input = req.body
     busmodel.find(input).then(
-        (course) => {
-            res.json(course)
+        (bus) => {
+            res.json(bus)
         }
     )
 })
@@ -97,7 +97,23 @@ app.post("/delete", (req, res) => {
     )
 })
 
+app.post("/viewusers", (req, res) => {
+    let token = req.headers["token"]
+    jwt.verify(token, "blog-app", (error, decoded) => {
+        if (error) {
+            res.json({ "status": "unauthorized access" })
+        } else {
+            if (decoded) {
+                busmodel.find().then(
+                    (response) => {
+                        res.json(response)
+                    }
+                ).catch()
+            }
+        }
+    })
 
+})
 
 
 app.listen(8004, () => {
