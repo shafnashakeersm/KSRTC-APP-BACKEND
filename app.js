@@ -31,6 +31,29 @@ app.length("/viewall",(req,res)=>{
 })
 
 
+app.post("/search",(req,res)=>{
+    let input=req.body
+    busmodel.find(input).then(
+        (course)=>{
+            res.json(course)
+        }
+    )
+})
+
+
+app.post("/delete",(req,res)=>{
+    let input=req.body
+    busmodel.findByIdAndDelete(input).then(
+        (Response)=>{
+            res.json({"status":"success"})
+        }
+    ).catch(
+        (error)=>{
+            res.json(Error)
+        }
+    )
+})
+
 app.listen(8004,()=>{
     console.log("server started")
 })
