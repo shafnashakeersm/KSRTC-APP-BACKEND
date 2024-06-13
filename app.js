@@ -18,6 +18,17 @@ app.post("/add",async(req,res)=>{
     res.json({status:"success"})
 })
 
+app.length("/viewall",(req,res)=>{
+    coursemodel.find().then(
+        (course)=>{
+            res.json(course)
+        }
+    ).catch(
+        (error)=>{
+            res.json(error)
+        }
+    )
+})
 
 
 app.listen(8004,()=>{
